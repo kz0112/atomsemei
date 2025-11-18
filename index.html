@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Қазақстанның атом энергетикасының болашағы: өткеннің сабақтары және болашақтың сын-тегеуріндері</title>
+<style>
+  /* ========== БАЗОВАЯ СТИЛИСТИКА ========== */
+  :root{
+    --bg:#0b1020;
+    --card:#0f1724;
+    --accent:#4ce0ff;
+    --accent2:#ff7bd1;
+    --glass: rgba(255,255,255,0.04);
+    --soft:#000000;
+    --radius:20px;
+    --big:clamp(20px,4vw,36px);
+    --md:clamp(14px,2.2vw,18px);
+    font-family: "Segoe UI", Roboto, system-ui, Arial, sans-serif;
+  }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: linear-gradient(180deg, #ffccd9 0%, #ffccd9 100%); /* ашық розовый градиент */
+    color: var(--soft);
+    -webkit-font-smoothing: antialiased;
+}
+
+.fullscreen-video, .explosion-wrap { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:#000; z-index:60; }
+  video{ width:100%; height:100%; object-fit:cover; display:block; }
+  .hide{ display:none !important; }
+
+  /* Skip button */
+  .skip-btn{
+    position:fixed; right:18px; top:18px; z-index:100;
+    background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+    border:1px solid rgba(255,255,255,0.06); color:var(--soft);
+    padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer;
+    backdrop-filter: blur(6px);
+  }
+
+  /* Canvas explosion */
+  #explosionCanvas{ width:100vw; height:100vh; display:block; }
+
+  /* Main site layout (hidden until intro finishes) */
+  #app{ display:none; min-height:100vh; padding:40px 6%; box-sizing:border-box; position:relative; z-index:10;}
+  header{ display:flex; align-items:center; gap:20px; margin-bottom:28px; }
+  .logo{
+    width:84px; height:84px; border-radius:18px; background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex; align-items:center; justify-content:center; font-weight:900; font-size:26px; color:#071226; box-shadow:0 8px 30px rgba(0,0,0,0.5);
+  }
+  header h1{ margin:0; font-size:var(--big); line-height:1; }
+  header p { margin:0; color:rgba(0, 0, 0, 0.9); opacity:0.9; font-size:14px }
+
+  /* grid */
+  .grid{
+    display:grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap:20px;
+  }
+
+  /* card */
+  .card {
+    position: relative;
+    padding: 18px;
+    border-radius: var(--radius);
+    min-height: 160px;
+    overflow: hidden;
+
+    /* негізгі фон градиенті */
+    background: linear-gradient(180deg, rgba(255, 230, 240, 0.1), rgba(255, 204, 217, 0.05));
+
+    /* рамка */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    /* жұмсақ көлеңке */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+
+    /* текст түсі */
+    color: var(--soft);
+
+    /* тегіс шрифт */
+    font-family: "Segoe UI", Roboto, system-ui, Arial, sans-serif;
+}
+
+/* размыты жарық эффекті */
+.card::before {
+    content: "";
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    top: -40px;
+    right: -40px;
+    background: radial-gradient(circle at 20% 20%, var(--accent) 0%, transparent 40%), 
+                radial-gradient(circle at 80% 80%, var(--accent2) 0%, transparent 40%);
+    filter: blur(36px);
+    opacity: 0.35;
+    transform: rotate(15deg);
+    pointer-events: none;
+}
+
+  .card .title{ font-size:18px; font-weight:800; margin-bottom:8px; color:var(--soft) }
+  .card .text{ font-size:14px; color:rgba(0, 0, 0, 0.9); line-height:1.4 }
+  .glow {
+    position:absolute; right:-40px; top:-40px; width:220px; height:220px; filter:blur(36px); opacity:0.35;
+    background: radial-gradient(circle at 20% 20%, var(--accent) 0%, transparent 40%), radial-gradient(circle at 80% 80%, var(--accent2) 0%, transparent 40%);
+    transform:rotate(15deg);
+  }
+  /* little icon */
+  .icon{
+    width:56px; height:56px; border-radius:12px; background:linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px; color:var(--accent);
+    box-shadow:0 6px 20px rgba(0,0,0,0.6); margin-bottom:12px;
+  }
+
+  /* particle background for the site */
+  #bgParticles{ position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.2; }
+
+  /* big section headline */
+  .section-title{ font-size:22px; font-weight:900; margin:24px 0 12px; color:var(--soft); }
+
+  /* survey charts (simple) */
+  .bars{ display:flex; gap:12px; align-items:end; height:140px; padding:10px; }
+  .bar{ flex:1; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; gap:8px; }
+  .bar > .col{ width:48px; border-radius:10px 10px 4px 4px; background:linear-gradient(180deg,var(--accent),var(--accent2)); transition:height 900ms ease; box-shadow: 0 6px 18px rgba(0,0,0,0.5); }
+  .bar label{ font-size:13px; color:rgba(230,247,255,0.9); }
+
+  /* responsive tweak */
+  @media (max-width:640px){
+    header{ flex-direction:column; align-items:flex-start; gap:8px }
+  }
+
+  /* small sparkle animation used in cards */
+  .sparkle{
+    position:absolute; left:14px; bottom:14px; width:12px; height:12px; border-radius:50%;
+    background:var(--accent); filter:blur(4px); opacity:0.9; transform:scale(0.9);
+    animation: twinkle 2.6s infinite;
+  }
+  @keyframes twinkle{
+    0%{ transform:scale(0.8); opacity:0.8 }
+    50%{ transform:scale(1.3); opacity:1 }
+    100%{ transform:scale(0.8); opacity:0.75 }
+  }
+
+  /* transition into app */
+  .fade-in{ animation: fadeIn 800ms ease both; }
+  @keyframes fadeIn{ from{ opacity:0; transform:translateY(8px) } to{ opacity:1; transform:none } }
+
+  /* friendly buttons */
+  .btn{
+    padding:10px 14px; border-radius:12px; background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#071226; font-weight:800; border:none; cursor:pointer;
+  }
+
+  footer{ margin-top:28px; color:rgba(255,255,255,0.6); font-size:13px; text-align:center; }
+</style>
+</head>
+<body>
+
+<!-- ====== FULLSCREEN USER VIDEO (YOUR FILE) ====== -->
+<div id="introVideo" class="fullscreen-video">
+  <video id="userVideo" autoplay muted playsinline preload="auto">
+    <!-- путь к вашему файлу (поместите рядом с index.html) -->
+    <source src="animation 2 (1).mp4" type="video/mp4">
+    Ваш браузер не поддерживает видео.
+  </video>
+
+  <button id="skipBtn" class="skip-btn" title="Пропустить интро">Өткізу</button>
+</div>
+
+<!-- ====== EXPLOSION ANIMATION (Canvas) ====== -->
+<div id="explosion" class="explosion-wrap hide" aria-hidden="true">
+  <canvas id="explosionCanvas"></canvas>
+  <button id="skipExplosion" class="skip-btn" style="top:18px; left:18px; right:auto; color: #ffffff">Анимацияны өткізіп жіберу</button>
+</div>
+
+<!-- ====== MAIN APP (hidden initially) ====== -->
+<canvas id="bgParticles"></canvas>
+<main id="app" role="main" aria-live="polite">
+  <header>
+    <img class="logo" src="https://aqzhelken.kazgazeta.kz/media/2021/08/12/1598624416_news_b.jpeg" alt="Атом энергиясы логотипі" style="width:50px; height:50px;">
+    <div>
+      <h1>Атом энергиясы — өткен, бүгін және болашақ</h1>
+<p>Балаларға арналған білімдік сайт — түсінікті карточкалар, жарқын иллюстрациялар және қарапайым графикалар.</p>
+
+    </div>
+  </header>
+
+
+  <!-- content grid -->
+  <section class="grid fade-in">
+    <article class="card">
+      <div class="glow"></div>
+      <div class="icon">🎯</div>
+      <div class="title">Мақсаты</div>
+      <div class="text">
+        Қазақстандағы атом энергетикасының дамуын, оның қазіргі жағдайын, мүмкіндіктері мен сын-қатерлерін зерттеу. Энергетика мен қауіпсіздік саласындағы атомның рөлін түсіну. (құжат материалдары бойынша)
+      </div>
+      <div class="sparkle"></div>
+    </article>
+
+    <article class="card">
+      <div class="icon">📜</div>
+      <div class="title">Қысқаша тарих</div>
+<div class="text">
+  1950–1970 жылдары КСРО-да атом энергетикасы дами бастады, және Қазақстанда алғашқы реакторлар орнатылды. Тарих бұл саладағы жетістіктер мен қиындықтарды, соның ішінде Семей полигонының әсерін көрсетеді. 
+</div>
+
+    </article>
+
+    <article class="card">
+      <div class="icon">⚠️</div>
+      <div class="title">Семей полигоны</div>
+      <div class="text">
+        Семей полигоны айтарлықтай экологиялық зардап қалдырды. Құжатта денсаулыққа және табиғатқа әсері туралы деректер келтіріліп, ядролық энергияны пайдалану кезіндегі жауапкершілікті еске салады. 
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="icon">🔬</div>
+      <div class="title">Атом энергиясы не үшін қажет?</div>
+<div class="text">
+  Атом аз мөлшердегі отыннан көп энергия береді, CO₂ шығарындыларын азайтуға көмектеседі және ғылыми зерттеулерді қолдайды. Дұрыс басқарылған жағдайда бұл тиімді ресурс болып табылады. 
+</div>
+
+    </article>
+
+    <article class="card">
+      <div class="icon">🌱</div>
+      <div class="title">Экологиялық салдары</div>
+<div class="text">
+  Тәуекелдер бар: радиоактивті қалдықтар, судың және қоршаған ортаның ластану мүмкіндігі. Алайда сауатты басқару мен заманауи стандарттар бұл тәуекелдерді азайтады.
+</div>
+
+    </article>
+
+    <article class="card">
+      <div class="icon">🛡️</div>
+      <div class="title">Қауіпсіздік және стандарттар</div>
+<div class="text">
+  Полигон тарихынан кейін қауіпсіздік негізгі басымдыққа айналды. Қазақстан ядролық қауіпсіздік пен қалдықтарды басқару бойынша халықаралық стандарттарды қабылдады.
+</div>
+
+    </article>
+
+    <article class="card">
+      <div class="icon">📈</div>
+      <div class="title">SWOT — қысқаша</div>
+<div class="text">
+  Күшті жақтары: тиімділік, CO₂ шығарындыларының аздығы. Әлсіз жақтары: апат қаупі, қалдықтар. Мүмкіндіктері: технологиялық прогресс. Қауіптері: апаттар және саяси кедергілер. 
+</div>
+
+    </article>
+
+    <article class="card">
+      <div class="icon">📊</div>
+      <div class="title">Сауалнама нәтижелері (қысқаша)</div>
+      <div class="text">
+        Құжатта қоғамның сенімі мен пікірлері пайызбен көрсетілген — мысалы: 60% атом энергетикасының дамуын маңызды деп санайды; 70% ядролық қаруға қарсы саясатты қолдайды. Төменде қарапайым визуализация берілген.
+      </div>
+      
+    </article>
+  </section>
+
+  <!-- survey charts -->
+  <section style="margin-top:26px;">
+    <div class="section-title">Интерактив: сауалнамалар (көрнекі)</div>
+    <div class="card" style="padding:18px;">
+      <div style="display:flex; gap:20px; align-items:center; flex-wrap:wrap;">
+        <div style="flex:1; min-width:260px;">
+          <div style="font-weight:800; margin-bottom:8px;">Сұрақ: "Қазақстан үшін атом энергетикасын дамыту маңызды ма?"</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <div style="width:10px; height:10px; background:var(--accent); border-radius:50%;"></div><div>Иә — 60%</div>
+            <div style="width:10px; height:10px; background:var(--accent2); border-radius:50%; margin-left:12px;"></div><div>Жоқ — 20%</div>
+            <div style="width:10px; height:10px; background:#9dd3ff; border-radius:50%; margin-left:12px;"></div><div>Білмеймін — 20%</div>
+          </div>
+        </div>
+        <div style="flex:1; min-width:200px;">
+          <div class="bars" id="chartImportant" aria-hidden="true">
+            <!-- bars создаются скриптом -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+</main>
+
+<script>
+/* ====== Управление интро видео и переходами ====== */
+const userVideo = document.getElementById('userVideo');
+const introVideoWrap = document.getElementById('introVideo');
+const explosionWrap = document.getElementById('explosion');
+const app = document.getElementById('app');
+const skipBtn = document.getElementById('skipBtn');
+const skipExplosionBtn = document.getElementById('skipExplosion');
+
+let explosionDone = false;
+
+// Когда ваше видео заканчивается -> показываем canvas анимацию
+userVideo.addEventListener('ended', ()=> {
+  startExplosionAnimation();
+});
+
+// skip handlers
+skipBtn.addEventListener('click', ()=> {
+  userVideo.pause();
+  startExplosionAnimation();
+});
+skipExplosionBtn.addEventListener('click', ()=> {
+  finishExplosionAndShowApp();
+});
+
+/* ====== Canvas: взрыв атома (частицы + лучи) ====== */
+const canvas = document.getElementById('explosionCanvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+let particles = [];
+let beams = [];
+let startTime = null;
+let animReq = null;
+
+function rand(min,max){ return Math.random()*(max-min)+min; }
+
+function initExplosion(){
+  particles = [];
+  beams = [];
+  const center = { x: canvas.width/2, y: canvas.height/2 };
+  // ядро
+  for(let i=0;i<180;i++){
+    particles.push({
+      x:center.x,
+      y:center.y,
+      vx: Math.cos(i/10 + Math.random()*2)*rand(2,10),
+      vy: Math.sin(i/8 + Math.random()*2)*rand(2,10),
+      life: rand(1200,2600),
+      age:0,
+      size: rand(2,6),
+      hue: rand(180,320)
+    });
+  }
+  // лучи
+  for(let i=0;i<26;i++){
+    beams.push({
+      x:center.x, y:center.y,
+      angle: rand(0,Math.PI*2),
+      len: rand(canvas.width*0.18, canvas.width*0.42),
+      width: rand(2,8),
+      hue: rand(150,330),
+      life: rand(800,1800), age:0
+    });
+  }
+  startTime = performance.now();
+}
+
+function drawExplosion(ts){
+  const dt = ts - (startTime || ts);
+  startTime = ts;
+  // полупрозрачный фон для свечения (делает следы)
+  ctx.fillStyle = 'rgba(4,6,18,0.18)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // рисуем лучи
+  for(const b of beams){
+    b.age += dt;
+    const progress = Math.min(1, b.age / b.life);
+    const alpha = 1 - progress;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    const x1 = b.x, y1 = b.y;
+    const x2 = x1 + Math.cos(b.angle) * b.len * (0.4 + progress*1.2);
+    const y2 = y1 + Math.sin(b.angle) * b.len * (0.4 + progress*1.2);
+    const grad = ctx.createLinearGradient(x1,y1,x2,y2);
+    grad.addColorStop(0, `hsla(${b.hue},95%,65%,${0.9*alpha})`);
+    grad.addColorStop(1, `hsla(${(b.hue+60)%360},95%,55%,${0.0})`);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = b.width * (1 + 3*progress);
+    ctx.beginPath();
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // частицы
+  for(const p of particles){
+    p.age += dt;
+    const prog = p.age / p.life;
+    if(p.age > p.life) continue;
+    // позиция
+    p.x += p.vx * (dt/16);
+    p.y += p.vy * (dt/16);
+    p.vy += 0.02 * (dt/16); // лёгкая гравитация
+    // визуал
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    const size = p.size * (1 + prog*2);
+    const alpha = Math.max(0, 1 - prog);
+    const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size*6);
+    grad.addColorStop(0, `hsla(${p.hue},100%,60%,${alpha})`);
+    grad.addColorStop(0.5, `hsla(${(p.hue+40)%360},100%,55%,${alpha*0.6})`);
+    grad.addColorStop(1, `rgba(0,0,0,0)`);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.ellipse(p.x, p.y, size*2, size*2, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // central flash
+  const cx = canvas.width/2, cy = canvas.height/2;
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  const flashRadius = Math.min(canvas.width, canvas.height)*0.08 + (Math.sin(performance.now()/120)*18);
+  const g = ctx.createRadialGradient(cx,cy,0,cx,cy,flashRadius*2);
+  g.addColorStop(0, "rgba(255,250,240,0.9)");
+  g.addColorStop(0.35, "rgba(255,200,190,0.25)");
+  g.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(cx,cy,flashRadius,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // check if all particles aged out
+  const alive = particles.some(p=> p.age < p.life);
+  const beamsAlive = beams.some(b=> b.age < b.life);
+  if(!alive && !beamsAlive){
+    // after short delay — заканчиваем анимацию
+    setTimeout(finishExplosionAndShowApp, 700);
+    cancelAnimationFrame(animReq);
+    animReq = null;
+    return;
+  }
+  animReq = requestAnimationFrame(drawExplosion);
+}
+
+function startExplosionAnimation(){
+  // скрываем видео
+  introVideoWrap.classList.add('hide');
+  explosionWrap.classList.remove('hide');
+  // делаем full-screen canvas видимым и запускаем эффект
+  initExplosion();
+  // очистим фон перед стартом
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  if(animReq) cancelAnimationFrame(animReq);
+  animReq = requestAnimationFrame(drawExplosion);
+
+  // если анимация висит слишком долго — автоматическое завершение через 8 секунд
+  setTimeout(()=>{
+    // если всё ещё идет, позволим окончить естественно
+    if(!explosionDone){
+      // делаем "ускоренное затухание" — пост-процесс: постарайтесь очистить частицы
+      particles.forEach(p=> p.age = p.life * 0.9);
+      beams.forEach(b=> b.age = b.life * 0.9);
+    }
+  }, 8000);
+}
+
+function finishExplosionAndShowApp(){
+  explosionDone = true;
+  explosionWrap.classList.add('hide');
+  // плавный показ приложения
+  app.style.display = 'block';
+  app.classList.add('fade-in');
+  // запускаем фоновые частицы сайта и интерактивные графики
+  startBgParticles();
+  buildChart();
+}
+
+/* ================== ФОНОВЫЕ ЧАСТИЦЫ САЙТА ================== */
+const bgCanvas = document.getElementById('bgParticles');
+const bgCtx = bgCanvas.getContext('2d');
+let bgParts = [];
+function resizeBg(){ bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+window.addEventListener('resize', resizeBg);
+resizeBg();
+function initBgParticles(){
+  bgParts = [];
+  for(let i=0;i<80;i++){
+    bgParts.push({
+      x: Math.random()*bgCanvas.width,
+      y: Math.random()*bgCanvas.height,
+      r: Math.random()*2.6+0.6,
+      vx: (Math.random()-0.5)*0.2,
+      vy: (Math.random()-0.5)*0.2,
+      hue: Math.random()*40 + 180
+    });
+  }
+}
+function drawBg(){
+  bgCtx.clearRect(0,0,bgCanvas.width,bgCanvas.height);
+  for(const p of bgParts){
+    p.x += p.vx; p.y += p.vy;
+    if(p.x<0) p.x = bgCanvas.width;
+    if(p.x>bgCanvas.width) p.x = 0;
+    if(p.y<0) p.y = bgCanvas.height;
+    if(p.y>bgCanvas.height) p.y = 0;
+    bgCtx.beginPath();
+    const g = bgCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*8);
+    g.addColorStop(0, `hsla(${p.hue},90%,60%,0.18)`);
+    g.addColorStop(1, `rgba(0,0,0,0)`);
+    bgCtx.fillStyle = g;
+    bgCtx.arc(p.x,p.y,p.r*6,0,Math.PI*2);
+    bgCtx.fill();
+  }
+  requestAnimationFrame(drawBg);
+}
+function startBgParticles(){ initBgParticles(); drawBg(); }
+
+/* ================== Простая визуализация опроса ================== */
+function buildChart(){
+  const container = document.getElementById('chartImportant');
+  // данные из документа (примерно)
+  const data = [
+    {label:'Да', value:60},
+    {label:'Нет', value:20},
+    {label:'Б/Н', value:20},
+  ];
+  container.innerHTML = '';
+  data.forEach(d=>{
+    const bar = document.createElement('div'); bar.className='bar';
+    const col = document.createElement('div'); col.className='col';
+    col.style.height = '6px'; // старт
+    col.setAttribute('role','img'); col.setAttribute('aria-label', d.label + ' ' + d.value + '%');
+    const lab = document.createElement('label'); lab.textContent = d.label;
+    bar.appendChild(col);
+    bar.appendChild(lab);
+    container.appendChild(bar);
+    // анимация роста
+    setTimeout(()=>{ col.style.height = (d.value/100*100) + 'px'; }, 80);
+    // используем разные оттенки
+    if(d.label === 'Да') col.style.background = 'linear-gradient(180deg,var(--accent),var(--accent2))';
+    if(d.label === 'Нет') col.style.background = 'linear-gradient(180deg,#ffb3b3,#ff7b7b)';
+    if(d.label === 'Б/Н') col.style.background = 'linear-gradient(180deg,#9dd3ff,#6ab3ff)';
+  });
+}
+
+/* ====== Начальная и тестовая активация (если пользователь откроет страницу без авто-плея) ====== */
+window.addEventListener('load', ()=>{
+  // если браузер заблокировал autoplay со звуком, видео всё равно начнётся muted.
+  // Если вы хотите сразу перейти к приложению (напр. для теста), раскомментируйте:
+  // finishExplosionAndShowApp();
+});
+</script>
+
+</body>
+</html>
