@@ -21,7 +21,7 @@
   html, body {
     height: 100%;
     margin: 0;
-    background: linear-gradient(180deg, #ffccd9 0%, #ffccd9 100%); /* ашық розовый градиент */
+    background: linear-gradient(180deg, #5da0db 0%, #5da0db 100%); /* ашық розовый градиент */
     color: var(--soft);
     -webkit-font-smoothing: antialiased;
 }
@@ -72,7 +72,6 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
 
     /* жұмсақ көлеңке */
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 
     /* текст түсі */
     color: var(--soft);
@@ -80,6 +79,7 @@
     /* тегіс шрифт */
     font-family: "Segoe UI", Roboto, system-ui, Arial, sans-serif;
 }
+
 
 /* размыты жарық эффекті */
 .card::before {
@@ -104,6 +104,84 @@
     background: radial-gradient(circle at 20% 20%, var(--accent) 0%, transparent 40%), radial-gradient(circle at 80% 80%, var(--accent2) 0%, transparent 40%);
     transform:rotate(15deg);
   }
+
+  #titlePage {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #5da0db, #5da0db);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Анимация */
+@keyframes fadeInTitle {
+  from {opacity: 0; transform: translateY(-20px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+#titlePage h1 {
+  font-size: clamp(28px, 6vw, 48px);
+  font-weight: 900;
+  color: #071226;
+  margin: 0;
+  animation: fadeInTitle 2s ease;
+}
+
+#titlePage p {
+  font-size: clamp(16px, 3vw, 22px);
+  color: #071226;
+  margin-top: 12px;
+  animation: fadeInTitle 3s ease;
+}
+
+#titlePage .intro-text {
+  font-size: clamp(14px, 2.5vw, 18px);
+  color: #071226;
+  margin-top: 16px;
+  max-width: 600px;
+  line-height: 1.6;
+  animation: fadeInTitle 4s ease;
+}
+
+#titlePage .btn {
+  margin-top: 28px;
+  padding: 12px 24px;
+  font-size: 18px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  background-color: #071226;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+#titlePage .btn:hover {
+  transform: scale(1.05);
+  background-color: #333;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 500px); /* бір қатарда 2 сурет */
+  gap: 12px;
+  justify-content: center; /* ортасына орналастыру */
+  width: 100%; /* контейнер экранға икемделеді */
+}
+
+.gallery img {
+  width: 500px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: .3s ease;
+  cursor: pointer;
+}
   /* little icon */
   .icon{
     width:56px; height:56px; border-radius:12px; background:linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
@@ -140,6 +218,11 @@
     100%{ transform:scale(0.8); opacity:0.75 }
   }
 
+  @keyframes fadeInTitle {
+  from {opacity:0; transform:translateY(-20px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
   /* transition into app */
   .fade-in{ animation: fadeIn 800ms ease both; }
   @keyframes fadeIn{ from{ opacity:0; transform:translateY(8px) } to{ opacity:1; transform:none } }
@@ -154,6 +237,17 @@
 </head>
 <body>
 
+
+  <div id="titlePage">
+    <h1>Қазақстанның атом энергетикасы</h1>
+    <p>Өткеннің сабақтары және болашақтың сын-тегеуріндері</p>
+    <p class="intro-text">
+      Атом энергиясы – біздің заманымыздағы ең маңызды ғылымдардың бірі. 
+      Ол тек электр энергиясын өндірумен шектелмей, медицинадан бастап ғарышқа дейінгі салаларда қолданылады. 
+      Бұл сайтта біз атом энергиясының тарихына, қазіргі дамуына және болашақтағы мүмкіндіктеріне саяхат жасаймыз.
+    </p>
+    <button onclick="startAppFromTitle()" class="btn">Видеоны көру</button>
+  </div>
 <!-- ====== FULLSCREEN USER VIDEO (YOUR FILE) ====== -->
 <div id="introVideo" class="fullscreen-video">
   <video id="userVideo" autoplay muted playsinline preload="auto">
@@ -183,18 +277,37 @@
     </div>
   </header>
 
+  <!-- ===== TITUL БЕТ ===== -->
 
+
+<article class="card">
+  <div class="icon">🎯</div>
+  <div class="title">Мақсаты және өзектілігі</div>
+  <div class="text">
+    Қазақстандағы атом энергетикасының рөлі:  
+    - Елдің энергия қауіпсіздігін қамтамасыз ету.  
+    - CO₂ шығарындыларын азайту арқылы экологиялық таза энергияға көшу.  
+    - Ғылыми-зерттеу және инновацияларды дамыту.  
+    <br>
+    <strong>Ұсыныс:</strong> Жобаларды кезең-кезеңімен енгізу, қауіпсіздік стандарттарын қатаң сақтау.
+  </div>
+</article>
+
+<article class="card">
+  <div class="icon">✅</div>
+  <div class="title">Нәтижелер мен ұсыныстар</div>
+  <div class="text">
+    <ul>
+      <li>Атом энергетикасы Қазақстанның энергия балансында 15–20% үлеске ие болуы мүмкін.</li>
+      <li>Қауіпсіздік стандарттарын халықаралық талаптарға сай енгізу қажет.</li>
+      <li>Жастарға ақпараттық білім беру — атом энергиясына сенімділікті арттырады.</li>
+      <li>Жаңа технологияларды енгізу: реакторлардың қауіпсіздігі мен тиімділігін арттыру.</li>
+    </ul>
+  </div>
+</article>
   <!-- content grid -->
   <section class="grid fade-in">
-    <article class="card">
-      <div class="glow"></div>
-      <div class="icon">🎯</div>
-      <div class="title">Мақсаты</div>
-      <div class="text">
-        Қазақстандағы атом энергетикасының дамуын, оның қазіргі жағдайын, мүмкіндіктері мен сын-қатерлерін зерттеу. Энергетика мен қауіпсіздік саласындағы атомның рөлін түсіну. (құжат материалдары бойынша)
-      </div>
-      <div class="sparkle"></div>
-    </article>
+   
 
     <article class="card">
       <div class="icon">📜</div>
@@ -259,7 +372,6 @@
     </article>
   </section>
 
-  <!-- survey charts -->
   <section style="margin-top:26px;">
     <div class="section-title">Интерактив: сауалнамалар (көрнекі)</div>
     <div class="card" style="padding:18px;">
@@ -281,6 +393,18 @@
     </div>
   </section>
 
+  <div class="gallery">
+    <img src="https://vlast.kz/media/upload/longrid/1dabf3e8ba0e59cd2557171817c0a98a_900xauto.jpg" alt="ewdc">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-Dnht_QeH1KDbl129IVEcv1pR56kxuEyy2Q&s" alt="">
+    <img src="https://avatars.mds.yandex.net/i?id=7ddcd03742f711c9f6f12f9f114f15c4fcf93fa7-16344295-images-thumbs&n=13" alt="">
+    <img src="https://avatars.mds.yandex.net/i?id=0b7e69250659edb830f29b3d478ddc816582aadf-3709311-images-thumbs&n=13" alt="">
+    <img src="https://avatars.mds.yandex.net/i?id=41847dab9f969d113ae13d3e6fa2ab27c3f1917e-3939836-images-thumbs&n=13" alt="">
+    <img src="https://egemen.kz/media/2022/02/24/kolladg-24-02-2022-atom-elektr-stansasy-ne-ushin-kerek-2.jpg" alt="">
+  </div>
+
+  <!-- survey charts -->
+
+
   
 </main>
 
@@ -299,6 +423,11 @@ let explosionDone = false;
 userVideo.addEventListener('ended', ()=> {
   startExplosionAnimation();
 });
+
+function startAppFromTitle() {
+  document.getElementById('titlePage').style.display = 'none';
+  finishExplosionAndShowApp(); // Сіздің негізгі қосымшаны көрсету функцияңыз
+}
 
 // skip handlers
 skipBtn.addEventListener('click', ()=> {
@@ -357,6 +486,8 @@ function initExplosion(){
   }
   startTime = performance.now();
 }
+
+
 
 function drawExplosion(ts){
   const dt = ts - (startTime || ts);
@@ -546,6 +677,8 @@ window.addEventListener('load', ()=>{
   // Если вы хотите сразу перейти к приложению (напр. для теста), раскомментируйте:
   // finishExplosionAndShowApp();
 });
+
+
 </script>
 
 </body>
